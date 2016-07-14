@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Mission xmlns="http://ProjectMalmo.microsoft.com" xmlns:xsi="http://www.w3.org/2001/XMLSchemainstance"
+         xsi:schemaLocation="http://ProjectMalmo.microsoft.com Mission.xsd">
+  <About>
+    <Summary/>
+  </About>
+  <ServerSection>
+    <ServerHandlers>
+      <FlatWorldGenerator generatorString="3;1*minecraft:bedrock,1*minecraft:quartz_block;2;"/>
+      <ServerQuitWhenAnyAgentFinishes description="Mission Complete"/>
+    </ServerHandlers>
+  </ServerSection>
+  <AgentSection mode="Survival">
+    <Name>Zoe</Name>
+    <AgentStart>
+      <Placement x="0" y="3" z="0" yaw="0" pitch="0" />
+    </AgentStart>
+    <AgentHandlers>
+      <ContinuousMovementCommands turnSpeedDegs="1080"/>
+      <ObservationFromFullStats/>
+      <AbsoluteMovementCommands />
+      <ChatCommands />
+      <InventoryCommands />
+    </AgentHandlers>
+  </AgentSection>
+</Mission>
