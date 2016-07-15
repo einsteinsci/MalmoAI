@@ -33,7 +33,7 @@ using UltimateUtil;
 // ReSharper disable once CheckNamespace
 public class Program
 {
-	public const int TIME_LIMIT = 20;
+	public const float TIME_LIMIT = 20.0f;
 
 	public static void Main()
 	{
@@ -64,11 +64,10 @@ public class Program
 			Environment.Exit(0);
 		}
 
-		MissionSpec mission = new MissionSpec(xml, false);
-		//mission.forceWorldReset();
-		mission.timeLimitInSeconds(TIME_LIMIT);
-		//mission.requestVideo(1280, 720);
-		mission.rewardForReachingPosition(19.5f, 0.0f, 19.5f, 100.0f, 1.1f);
+		MissionAI ai = new MissionAI(agentHost);
+		
+		ai.InitializeMission(xml);
+		MissionSpec mission = ai.Mission;
 
 		MissionRecordSpec missionRecord = new MissionRecordSpec("./saved_data.tgz");
 		missionRecord.recordCommands();
@@ -87,47 +86,43 @@ public class Program
 			Environment.Exit(1);
 		}
 
-		WorldState worldState;
-
 		Console.WriteLine("Waiting for the mission to start");
 		do
 		{
 			Console.Write(".");
 			Thread.Sleep(100);
-			worldState = agentHost.getWorldState();
+			ai.World = agentHost.getWorldState();
 
-			foreach (TimestampedString error in worldState.errors)
+			foreach (TimestampedString error in ai.World.errors)
 			{
 				Console.Error.WriteLine("Error: {0}", error.text);
 			}
-		} while (!worldState.is_mission_running);
+		} while (!ai.World.is_mission_running);
 
 		Console.WriteLine();
 
 		ContinuousAgentCommands.Initialize(agentHost);
 		AbsoluteAgentCommands.Initialize(agentHost);
-		MissionAI ai = new MissionAI(agentHost, mission);
+		ChatAgentCommands.Initialize(agentHost);
 
 		// One-Time init AI:
-		ai.Initialize();
+		ai.FirstActions();
 		
 		// main loop:
-		while (worldState.is_mission_running)
+		while (ai.World.is_mission_running)
 		{
-			ContinuousAgentCommands.SendEmpty();
+			agentHost.sendCommand("");
 			ai.Update();
-			//Thread.Sleep(500);
-			worldState = agentHost.getWorldState();
-			ai.World = worldState;
+			ai.World = agentHost.getWorldState();
 
 			//Console.WriteLine("Frames: {0}, Observations: {1}, Rewards: {2}", worldState.number_of_video_frames_since_last_state,
 			//	worldState.number_of_observations_since_last_state, worldState.number_of_rewards_since_last_state);
 
-			foreach (TimestampedReward reward in worldState.rewards)
+			foreach (TimestampedReward reward in ai.World.rewards)
 			{
 				Console.Error.WriteLine($"Summed reward: {reward.getValue()}");
 			}
-			foreach (TimestampedString error in worldState.errors)
+			foreach (TimestampedString error in ai.World.errors)
 			{
 				Console.Error.WriteLine($"Error: {error.text}");
 			}

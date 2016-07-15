@@ -1,0 +1,264 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:RunMission.WPF"
+                    xmlns:m="http://metro.mahapps.com/winfx/xaml/controls">
+  <Style x:Key="AccentedFlatButtonStyle" TargetType="{x:Type Button}">
+    <Setter Property="Background"
+            Value="{DynamicResource AccentColorBrush}" />
+    <Setter Property="Foreground"
+            Value="{DynamicResource IdealForegroundColorBrush}" />
+    <Style.BasedOn>
+      <Style TargetType="{x:Type Button}">
+        <Setter Property="m:ControlsHelper.ContentCharacterCasing"
+                Value="Normal" />
+        <Setter Property="MinHeight"
+                Value="25" />
+        <Setter Property="FontFamily"
+                Value="{DynamicResource DefaultFont}" />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="Background"
+                Value="{DynamicResource WhiteBrush}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource BlackBrush}" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextBrush}" />
+        <Setter Property="Padding"
+                Value="5,6" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="SnapsToDevicePixels"
+                Value="True" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type Button}">
+              <Grid Background="{TemplateBinding Background}">
+                <VisualStateManager.VisualStateGroups>
+                  <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Disabled">
+                      <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
+                                                       Storyboard.TargetName="DisabledVisualElement">
+                          <SplineDoubleKeyFrame KeyTime="0"
+                                                Value="0.7" />
+                        </DoubleAnimationUsingKeyFrames>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)"
+                                                       Storyboard.TargetName="PART_ContentPresenter">
+                          <EasingDoubleKeyFrame KeyTime="0"
+                                                Value="0.3" />
+                        </DoubleAnimationUsingKeyFrames>
+                      </Storyboard>
+                    </VisualState>
+                  </VisualStateGroup>
+                  <VisualStateGroup x:Name="FocusStates">
+                    <VisualState x:Name="Focused" />
+                    <VisualState x:Name="Unfocused" />
+                  </VisualStateGroup>
+                  <VisualStateGroup x:Name="ValidationStates">
+                    <VisualState x:Name="Valid" />
+                    <VisualState x:Name="InvalidFocused" />
+                    <VisualState x:Name="InvalidUnfocused" />
+                  </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+                <Border x:Name="Background"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{x:Null}"
+                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                <Rectangle x:Name="DisabledVisualElement"
+                           Fill="{DynamicResource ControlsDisabledBrush}"
+                           IsHitTestVisible="False"
+                           Opacity="0" />
+                <m:ContentControlEx x:Name="PART_ContentPresenter"
+                                    ContentCharacterCasing="{Binding (m:ControlsHelper.ContentCharacterCasing), RelativeSource={RelativeSource TemplatedParent}}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    Content="{TemplateBinding Content}"
+                                    ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    Padding="{TemplateBinding Padding}"
+                                    RecognizesAccessKey="True"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+              </Grid>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver"
+                         Value="True">
+                  <Setter Property="Background"
+                          Value="{DynamicResource GrayBrush8}" />
+                  <Setter Property="Foreground"
+                          Value="{DynamicResource BlackBrush}" />
+                </Trigger>
+                <Trigger Property="IsPressed"
+                         Value="True">
+                  <Setter Property="Background"
+                          Value="{DynamicResource BlackBrush}" />
+                  <Setter Property="Foreground"
+                          Value="{DynamicResource WhiteBrush}" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+    </Style.BasedOn>
+  </Style>
+
+  <Style x:Key="DarkCommandTextBoxStyle"
+         TargetType="{x:Type TextBox}">
+    <Setter Property="Background"
+            Value="#FF1E1E1E" />
+    <Setter Property="Foreground"
+            Value="White" />
+    <Setter Property="FontFamily"
+            Value="Consolas" />
+    <Setter Property="FontSize"
+            Value="12" />
+    <Setter Property="VerticalContentAlignment"
+            Value="Center" />
+    <Setter Property="SelectionBrush"
+            Value="#FF555555" />
+  </Style>
+  
+  <Style x:Key="DarkConsoleOutputStyle"
+         TargetType="{x:Type RichTextBox}">
+    <Style.BasedOn>
+      <Style TargetType="{x:Type RichTextBox}">
+        <Style.Resources>
+          <Style x:Key="{x:Type Hyperlink}"
+                 TargetType="{x:Type Hyperlink}">
+            <Setter Property="Foreground"
+                    Value="{DynamicResource AccentColorBrush}" />
+            <Setter Property="TextDecorations"
+                    Value="Underline" />
+            <Style.BasedOn>
+              <Style TargetType="{x:Type Hyperlink}">
+                <Setter Property="Foreground"
+                        Value="{DynamicResource HyperlinkBrush}" />
+                <Style.Triggers>
+                  <Trigger Property="IsEnabled"
+                           Value="False">
+                    <Setter Property="Foreground"
+                            Value="{DynamicResource Deprecated_FadedTextBrush}" />
+                  </Trigger>
+                </Style.Triggers>
+              </Style>
+            </Style.BasedOn>
+            <Style.Triggers>
+              <Trigger Property="IsMouseOver"
+                       Value="True">
+                <Setter Property="Foreground"
+                        Value="{DynamicResource HighlightBrush}" />
+              </Trigger>
+              <Trigger Property="IsEnabled"
+                       Value="False">
+                <Setter Property="Foreground"
+                        Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+              </Trigger>
+              <Trigger Property="IsEnabled"
+                       Value="True">
+                <Setter Property="Cursor"
+                        Value="Hand" />
+              </Trigger>
+            </Style.Triggers>
+          </Style>
+        </Style.Resources>
+        <Setter Property="ContextMenu"
+                Value="{DynamicResource TextBoxMetroContextMenu}" />
+        <Setter Property="SelectionBrush"
+                Value="{DynamicResource HighlightBrush}" />
+        <Setter Property="FontFamily"
+                Value="{DynamicResource ContentFontFamily}" />
+        <Setter Property="FontSize"
+                Value="{DynamicResource ContentFontSize}" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="MinHeight"
+                Value="26" />
+        <Setter Property="MinWidth"
+                Value="10" />
+        <Setter Property="Background"
+                Value="{DynamicResource ControlBackgroundBrush}" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource TextBrush}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource TextBoxBorderBrush}" />
+        <Setter Property="m:ControlsHelper.FocusBorderBrush"
+                Value="{DynamicResource TextBoxFocusBorderBrush}" />
+        <Setter Property="m:ControlsHelper.MouseOverBorderBrush"
+                Value="{DynamicResource TextBoxMouseOverBorderBrush}" />
+        <Setter Property="Padding"
+                Value="1" />
+        <Setter Property="AllowDrop"
+                Value="True" />
+        <Setter Property="FocusVisualStyle"
+                Value="{x:Null}" />
+        <Setter Property="ScrollViewer.PanningMode"
+                Value="VerticalFirst" />
+        <Setter Property="Stylus.IsFlicksEnabled"
+                Value="False" />
+        <Setter Property="SnapsToDevicePixels"
+                Value="True" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type TextBoxBase}">
+              <Grid>
+                <Border x:Name="Bd"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}"
+                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                  <ScrollViewer x:Name="PART_ContentHost"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                </Border>
+                <Border x:Name="DisabledVisualElement"
+                        BorderBrush="{DynamicResource ControlsDisabledBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{DynamicResource ControlsDisabledBrush}"
+                        IsHitTestVisible="False"
+                        Opacity="0"
+                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                        Visibility="{Binding (m:ControlsHelper.DisabledVisualElementVisibility), Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+              </Grid>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver"
+                         Value="True">
+                  <Setter Property="BorderBrush"
+                          TargetName="Bd"
+                          Value="{Binding (m:ControlsHelper.MouseOverBorderBrush), RelativeSource={RelativeSource TemplatedParent}}" />
+                </Trigger>
+                <Trigger Property="IsFocused"
+                         Value="True">
+                  <Setter Property="BorderBrush"
+                          TargetName="Bd"
+                          Value="{Binding (m:ControlsHelper.FocusBorderBrush), RelativeSource={RelativeSource TemplatedParent}}" />
+                </Trigger>
+                <Trigger Property="IsEnabled"
+                         Value="False">
+                  <Setter Property="Opacity"
+                          TargetName="DisabledVisualElement"
+                          Value="0.6" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+    </Style.BasedOn>
+
+    <Setter Property="Background"
+            Value="#FF1E1E1E" />
+    <Setter Property="Foreground"
+            Value="White" />
+    <Setter Property="FontFamily"
+            Value="Consolas" />
+    <Setter Property="FontSize"
+            Value="11" />
+    <Setter Property="IsReadOnly"
+            Value="True" />
+    <Setter Property="AutoWordSelection"
+            Value="False" />
+    <Setter Property="SelectionBrush"
+            Value="#FF555555" />
+  </Style>
+</ResourceDictionary>

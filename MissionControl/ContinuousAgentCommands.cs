@@ -14,11 +14,6 @@ namespace MissionControl
 			Agent = agent;
 		}
 
-		public static void SendEmpty()
-		{
-			Agent.sendCommand("");
-		}
-
 		public static void Move(double velocity)
 		{
 			Agent.sendCommand("move " + velocity);
@@ -80,7 +75,7 @@ namespace MissionControl
 			Agent.sendCommand("attack 1");
 		}
 
-		public static void EndUse()
+		public static void StopUse()
 		{
 			Agent.sendCommand("attack 0");
 		}
@@ -90,7 +85,7 @@ namespace MissionControl
 			Thread clicker = new Thread(() => {
 				Use();
 				Thread.Sleep(100);
-				EndUse();
+				StopUse();
 			});
 			clicker.Start();
 		}
@@ -109,6 +104,16 @@ namespace MissionControl
 		{
 			Turn(direction.X);
 			Pitch(direction.Y);
+		}
+
+		public static void StopEverything()
+		{
+			Look(Vector2.Zero);
+			MoveStrafe(Vector2.Zero);
+			StopUse();
+			StopAttack();
+			StopJump();
+			UnCrouch();
 		}
 	}
 }

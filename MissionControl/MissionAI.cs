@@ -10,11 +10,13 @@ namespace MissionControl
 {
 	public class MissionAI
 	{
+		public const float TIME_LIMIT = 20.0f;
+
 		public AgentHost Agent
 		{ get; }
 
 		public MissionSpec Mission
-		{ get; }
+		{ get; protected set; }
 
 		public WorldState World
 		{ get; set; }
@@ -22,15 +24,36 @@ namespace MissionControl
 		public Random Rand
 		{ get; }
 
-		public MissionAI(AgentHost agent, MissionSpec mission)
+		public virtual int FrameTime => 200;
+
+		protected long agentFrame;
+
+		public MissionAI(AgentHost agent)
 		{
 			Agent = agent;
-			Mission = mission;
 			Rand = new Random();
 		}
 
-		public void Initialize()
+		public virtual string GetDebugString()
 		{
+			string res = "";
+
+			res += "Agent Frame: " + agentFrame;
+
+			return res;
+		}
+
+		public virtual void InitializeMission(string xml)
+		{
+			Mission = new MissionSpec(xml, false);
+			Mission.timeLimitInSeconds(TIME_LIMIT);
+			Mission.rewardForReachingPosition(19.5f, 2.0f, 19.5f, 100.0f, 1.1f);
+			//Mission.forceWorldReset();
+		}
+
+		public virtual void FirstActions()
+		{
+			agentFrame = 0;
 			World = Agent.getWorldState();
 
 			Mission.allowAllAbsoluteMovementCommands();
@@ -44,14 +67,12 @@ namespace MissionControl
 			Thread.Sleep(1000);
 		}
 
-		public void Update()
+		public virtual void Update()
 		{
+			agentFrame++;
+
 			ContinuousAgentCommands.Move(1);
 			ContinuousAgentCommands.Turn(Rand.NextDouble(-20, 20));
-
-			Thread.Sleep(200);
-
-			List<string> observations = World.observations.ToList().ConvertAll(tss => tss.text);
 		}
 	}
 }
