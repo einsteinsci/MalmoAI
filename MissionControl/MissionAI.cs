@@ -6,44 +6,44 @@ using System.Threading;
 
 using Microsoft.Research.Malmo;
 
+using MissionControl.Observations;
+
+using Newtonsoft.Json;
+
+using UltimateUtil;
+using UltimateUtil.Logging;
+using UltimateUtil.UserInteraction;
+
 namespace MissionControl
 {
-	public class MissionAI
+	public sealed class MissionAI : AIBase
 	{
 		public const float TIME_LIMIT = 20.0f;
 
-		public AgentHost Agent
-		{ get; }
+		private long _agentFrame;
 
-		public MissionSpec Mission
-		{ get; protected set; }
+		public StatusObservations Status
+		{ get; private set; }
 
-		public WorldState World
-		{ get; set; }
+		public override int FrameTime => 50;
 
-		public Random Rand
-		{ get; }
+		public MissionAI(AgentHost agent) : base(agent)
+		{ }
 
-		public virtual int FrameTime => 200;
-
-		protected long agentFrame;
-
-		public MissionAI(AgentHost agent)
-		{
-			Agent = agent;
-			Rand = new Random();
-		}
-
-		public virtual string GetDebugString()
+		public override string GetDebugString()
 		{
 			string res = "";
 
-			res += "Agent Frame: " + agentFrame;
+			res += "Agent Frame: " + _agentFrame + "\n";
+			if (Status != null)
+			{
+				res += Status.ToString();
+			}
 
 			return res;
 		}
 
-		public virtual void InitializeMission(string xml)
+		public override void InitializeMission(string xml)
 		{
 			Mission = new MissionSpec(xml, false);
 			Mission.timeLimitInSeconds(TIME_LIMIT);
@@ -51,25 +51,33 @@ namespace MissionControl
 			//Mission.forceWorldReset();
 		}
 
-		public virtual void FirstActions()
+		public override void FirstActions()
 		{
-			agentFrame = 0;
-			World = Agent.getWorldState();
+			base.FirstActions();
 
-			Mission.allowAllAbsoluteMovementCommands();
-			Agent.sendCommand("setPitch 40");
-			
-			Mission.allowAllChatCommands();
-			//Agent.sendCommand("chat /tp @p ~ ~1 ~ 0 0");
-
-			Mission.allowAllContinuousMovementCommands();
-
-			Thread.Sleep(1000);
+			_agentFrame = 0;
+			ChatAgentCommands.SendChat("/difficulty peaceful");
 		}
 
-		public virtual void Update()
+		public override void Update()
 		{
-			agentFrame++;
+			_agentFrame++;
+
+			if (!World.observations.IsNullOrEmpty())
+			{
+				foreach (TimestampedString tss in World.observations)
+				{
+					string json = tss.text;
+					try
+					{
+						Status = JsonConvert.DeserializeObject<StatusObservations>(json);
+					}
+					catch (JsonException ex)
+					{
+						VersatileIO.WriteLine(ex.MakeExceptionInfo());
+					}
+				}
+			}
 
 			ContinuousAgentCommands.Move(1);
 			ContinuousAgentCommands.Turn(Rand.NextDouble(-20, 20));

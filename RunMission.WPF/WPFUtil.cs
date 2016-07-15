@@ -10,6 +10,7 @@ namespace RunMission.WPF
 	public static class WPFUtil
 	{
 		public static readonly Color DARKER_GRAY = new Color { A = 255, R = 60, G = 60, B = 60 };
+		public static readonly Color LIGHT_RED = new Color { A = 255, R = 255, G = 100, B = 100 };
 
 		[DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
 		public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
@@ -46,7 +47,7 @@ namespace RunMission.WPF
 			case ConsoleColor.Cyan:
 				return Colors.Cyan;
 			case ConsoleColor.Red:
-				return Colors.Red;
+				return LIGHT_RED;
 			case ConsoleColor.Magenta:
 				return Colors.Magenta;
 			case ConsoleColor.Yellow:

@@ -12,9 +12,7 @@ namespace MissionControl
 		public static Vector3 One => new Vector3(1, 1, 1);
 
 		public static Vector3 UnitX => new Vector3(1, 0, 0);
-
 		public static Vector3 UnitY => new Vector3(0, 1, 0);
-
 		public static Vector3 UnitZ => new Vector3(0, 0, 1);
 
 
@@ -94,6 +92,11 @@ namespace MissionControl
 			return $"({X}, {Y}, {Z})";
 		}
 
+		public string ToString(string format)
+		{
+			return "(" + X.ToString(format) + ", " + Y.ToString(format) + ", " + Z.ToString(format) + ")";
+		}
+
 		public double Distance(Vector3 other)
 		{
 			double dx = X - other.X;
@@ -103,39 +106,44 @@ namespace MissionControl
 			return Math.Sqrt(dx * dx + dy * dy + dz * dz);
 		}
 
-		public static bool operator==(Vector3 a, Vector3 b)
+		public static bool operator ==(Vector3 a, Vector3 b)
 		{
 			return a.Equals(b);
 		}
 
-		public static bool operator!=(Vector3 a, Vector3 b)
+		public static bool operator !=(Vector3 a, Vector3 b)
 		{
 			return !a.Equals(b);
 		}
 
-		public static Vector3 operator+(Vector3 a, Vector3 b)
+		public static Vector3 operator +(Vector3 a, Vector3 b)
 		{
 			return new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
 		}
 
-		public static Vector3 operator-(Vector3 a, Vector3 b)
+		public static Vector3 operator -(Vector3 a, Vector3 b)
 		{
 			return new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
 		}
 
-		public static Vector3 operator*(Vector3 val, double k)
+		public static Vector3 operator *(Vector3 val, double k)
 		{
 			return new Vector3(val.X * k, val.Y * k, val.Z * k);
 		}
 
-		public static Vector3 operator/(Vector3 val, double k)
+		public static Vector3 operator /(Vector3 val, double k)
 		{
 			return new Vector3(val.X / k, val.Y / k, val.Z / k);
 		}
 
-		public static Vector3 operator-(Vector3 val)
+		public static Vector3 operator -(Vector3 val)
 		{
 			return new Vector3(-val.X, -val.Y, -val.Z);
+		}
+
+		public static explicit operator BlockPos(Vector3 v)
+		{
+			return new BlockPos((int)v.X, (int)v.Y, (int)v.Z);
 		}
 	}
 }

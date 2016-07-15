@@ -76,7 +76,7 @@ namespace RunMission.WPF
 			}
 			catch (Exception ex)
 			{
-				Logger.LogError(ex.MakeExceptionInfo());
+				VersatileIO.WriteLine(ex.MakeExceptionInfo(), ConsoleColor.Red);
 				IsAgentRunning = false;
 				OnRunExit();
 				return;
@@ -84,15 +84,15 @@ namespace RunMission.WPF
 
 			if (args.ToList().Exists(s => s.ToLower() == "help"))
 			{
-				Logger.LogInfo(Agent.getUsage());
+				VersatileIO.WriteLine(Agent.getUsage(), ConsoleColor.DarkCyan);
 				OnRunExit();
 				return;
 			}
 
-			MissionAI ai;
+			AIBase ai;
 			try
 			{
-				ai = adhoc ? new AdHocAI(Agent) : new MissionAI(Agent);
+				ai = adhoc ? new AdHocAI(Agent) as AIBase : new MissionAI(Agent);
 				ai.InitializeMission(xml);
 			}
 			catch (Exception ex)
@@ -115,7 +115,7 @@ namespace RunMission.WPF
 			}
 			catch (Exception ex)
 			{
-				Logger.LogError(ex.MakeCrashReport(ai.Mission, Agent, Agent.peekWorldState()));
+				Logger.LogError(ex.MakeCrashReport(ai.Mission, Agent.peekWorldState()));
 				OnRunExit();
 				return;
 			}
@@ -135,7 +135,6 @@ namespace RunMission.WPF
 				if (IsCancelling)
 				{
 					IsCancelling = false;
-					VersatileIO.WriteLine();
 					VersatileIO.WriteLine("Mission setup canceled.", ConsoleColor.Red);
 					OnRunExit();
 					return;
@@ -162,26 +161,24 @@ namespace RunMission.WPF
 
 				foreach (TimestampedReward tsr in ai.World.rewards)
 				{
-					Logger.LogSuccess("Total Rewards: " + tsr.getValue());
+					VersatileIO.WriteLine("Total Rewards: " + tsr.getValue(), ConsoleColor.Green);
 				}
 
 				foreach (TimestampedString tss in ai.World.errors)
 				{
-					Logger.LogError("World Error: " + tss.text);
+					VersatileIO.WriteLine("World Error: " + tss.text, ConsoleColor.Red);
 				}
 
 				if (IsCancelling)
 				{
 					IsCancelling = false;
-					VersatileIO.WriteLine();
 					VersatileIO.WriteLine("Mission stopped.", ConsoleColor.Red);
 					OnRunExit();
 					return;
 				}
 			}
-
-			Logger.LogSuccess("Mission complete! (Return to base.)");
-			VersatileIO.WriteLine();
+			
+			VersatileIO.WriteLine("Mission complete! (Return to base.)", ConsoleColor.Green);
 
 			OnRunExit();
 		}

@@ -16,6 +16,7 @@
                Text="Debug Text"
                FontSize="12"
                HorizontalAlignment="Right"
+               TextAlignment="Right"
                Margin="5,5,10,5" />
 
     <StackPanel Grid.Row="1"

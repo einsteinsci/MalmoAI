@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using MissionControl;
+
 using RunMission.WPF.View;
 
 using UltimateUtil.Logging;
@@ -33,7 +35,7 @@ namespace RunMission.WPF
 				}
 				else
 				{
-					Logger.LogWarning("Ad-Hoc agent already running.");
+					VersatileIO.WriteLine("Ad-Hoc agent already running.", ConsoleColor.Yellow);
 				}
 				return;
 			}
@@ -47,7 +49,33 @@ namespace RunMission.WPF
 				}
 				else
 				{
-					Logger.LogWarning("Ad-Hoc agent not running.");
+					VersatileIO.WriteLine("Ad-Hoc agent not running.", ConsoleColor.Yellow);
+				}
+				return;
+			}
+
+			if (lower == "crash")
+			{
+				try
+				{
+					throw new Exception("THIS IS NOT A ERROR.");
+				}
+				catch (Exception ex)
+				{
+					VersatileIO.WriteLine(ex.MakeCrashReport(null, null), ConsoleColor.Red);
+				}
+				return;
+			}
+
+			if (lower == "throw")
+			{
+				try
+				{
+					throw new Exception("THIS IS NOT A ERROR.");
+				}
+				catch (Exception ex)
+				{
+					VersatileIO.WriteLine(ex.MakeExceptionInfo(), ConsoleColor.Red);
 				}
 				return;
 			}

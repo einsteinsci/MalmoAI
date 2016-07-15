@@ -13,14 +13,14 @@
   <AgentSection mode="Survival">
     <Name>Luna</Name>
     <AgentStart>
-      <Placement x="0" y="3" z="0" yaw="0" pitch="0" />
+      <Placement x="0" y="2" z="0" yaw="0" pitch="0" />
     </AgentStart>
     <AgentHandlers>
       <ContinuousMovementCommands turnSpeedDegs="1080"/>
-      <ObservationFromFullStats/>
       <AbsoluteMovementCommands />
       <ChatCommands />
       <InventoryCommands />
+      <ObservationFromFullStats />
     </AgentHandlers>
   </AgentSection>
 </Mission>

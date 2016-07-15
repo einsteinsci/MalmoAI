@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -10,31 +12,54 @@ using System.Windows.Media;
 using RunMission.WPF.View;
 
 using UltimateUtil;
+using UltimateUtil.Logging;
 using UltimateUtil.UserInteraction;
 
 namespace RunMission.WPF.ViewModel
 {
-	public class MissionConsoleHandler : VersatileHandlerBase
+	public class MissionConsoleHandler : VersatileHandlerBase, IDisposable
 	{
+		public const string LOG_PATH = "log.txt";
+		public const string PROMPT_STRING = "mission> ";
+		
 		public ConsoleView View
 		{ get; }
 
-		public static string CurrentInput
+		public string CurrentInput
 		{ get; set; }
+
+		public StreamWriter Stream
+		{ get; private set; }
 
 		public MissionConsoleHandler(ConsoleView view)
 		{
 			View = view;
+
+			Stream = new StreamWriter(new FileStream(LOG_PATH, FileMode.Create, FileAccess.ReadWrite));
 		}
 
 		public override void LogPart(string text, ConsoleColor? color)
 		{
-			View.Dispatcher.Invoke(() => View.AppendText(text, color));
+			try
+			{
+				View.Dispatcher.Invoke(() => View.AppendText(text, color));
+			}
+			catch (TaskCanceledException)
+			{ }
+
+			Stream.Write(text);
 		}
 
 		public override void LogLine(string line, ConsoleColor color)
 		{
-			View.Dispatcher.Invoke(() => View.AppendLine(line, color));
+			try
+			{
+				View.Dispatcher.Invoke(() => View.AppendLine(line, color));
+			}
+			catch (TaskCanceledException)
+			{ }
+
+			Stream.WriteLine(line);
 		}
 
 		public override string GetString(string prompt)
@@ -43,7 +68,11 @@ namespace RunMission.WPF.ViewModel
 
 			CurrentInput = null;
 			View.Dispatcher.Invoke(() => { View.RunBtn.IsEnabled = true; });
-			LogPart(prompt, ConsoleColor.Blue);
+
+			if (prompt != PROMPT_STRING)
+			{
+				LogPart(prompt, LogLevel.Interface.GetLevelColor());
+			}
 
 			while (CurrentInput == null)
 			{
@@ -55,7 +84,8 @@ namespace RunMission.WPF.ViewModel
 				}
 			}
 
-			LogLine(CurrentInput, ConsoleColor.Blue);
+			VersatileIO.Write(PROMPT_STRING, LogLevel.Interface.GetLevelColor());
+			VersatileIO.WriteLine(CurrentInput, LogLevel.Interface.GetLevelColor());
 			return CurrentInput.Replace('\n', ' ').Trim();
 		}
 
@@ -99,6 +129,20 @@ namespace RunMission.WPF.ViewModel
 			string input = GetString(prompt);
 
 			return input.IsNullOrWhitespace() ? null : input;
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				Stream?.Dispose();
+			}
 		}
 	}
 }

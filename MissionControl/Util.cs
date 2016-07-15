@@ -16,8 +16,9 @@ namespace MissionControl
 	public static class Util
 	{
 		public static readonly Assembly MALMO_ASM = Assembly.GetAssembly(typeof(AgentHost));
-
+		
 		public static readonly List<string> RANDOM_COMMENTS = new List<string> {
+			#region witty comments
 			"Who set us up the TNT?",
 			"Everything's going to plan. No really, that was supposed to happen.",
 			"Uh... Did I do that?",
@@ -49,6 +50,7 @@ namespace MissionControl
 			"You're mean.",
 			"This is a token for 1 free hug. Redeem at your nearest Microsoftee: [~~HUG~~]",
 			"There are four lights!"
+			#endregion witty comments
 		};
 
 		public static double NextDouble(this Random rand, double min, double max)
@@ -70,14 +72,17 @@ namespace MissionControl
 				stacktrace + "\n";
 		}
 
-		public static string MakeCrashReport(this Exception ex, MissionSpec mission, AgentHost agent, WorldState world)
+		public static string MakeCrashReport(this Exception ex, MissionSpec mission, WorldState world)
 		{
 			string version = MALMO_ASM.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ?? "UNKNOWN";
 			string os = Environment.OSVersion.VersionString;
 			string args = string.Join(" ", Environment.GetCommandLineArgs().Skip(1));
-			string time = DateTime.Now.ToString("MM/DD/YY h:mm tt");
+			string time = DateTime.Now.ToString("MM/dd/yy h:mm tt");
 			string stacktrace = ex.StackTrace.Replace("   ", "\t");
 			string firstSixLines = stacktrace.FirstFewLines(6);
+			string rawXML = mission?.getAsXML(true) ?? "NULL";
+			string worldStr = world == null ? "" : string.Join("\n\t", from kvp in world.ToDictionary()
+				where true select kvp.Key + ": " + kvp.Value);
 
 			return "---- Malmo Crash Report ----\n" +
 				$"// {GetRandomComment()}\n\n" +
@@ -90,36 +95,21 @@ namespace MissionControl
 				"Stacktrace:\n" + 
 				firstSixLines + "\n\n" +
 				"-- Affected MissionSpec --\n" +
-				string.Join("\n\t", mission.getAsXML(true).Split('\n')) + "\n" +
-				"-- Affected AgentHost --\n" +
-				"\t" + agent + "\n" +
+				string.Join("\n\t", rawXML.Split('\n')) + "\n" +
 				"-- Affected WorldState --\n" +
-				string.Join("\n\t", from kvp in world.ToDictionary()
-					select kvp.Key + ": " + kvp.Value) + "\n\n" +
+				worldStr + "\n\n" +
 				"-- System Details --\n" +
 				"Details:\n" +
 				$"\tMalmo Version: {version}\n" +
 				$"\tOperating System: {os}\n" +
-				$"\tCLR Version: {Environment.Version}";
+				$"\tCLR Version: {Environment.Version}" + 
+				$"\tApplication Arguments: {args}";
 		}
 
 		public static string GetRandomComment()
 		{
 			Random rand = new Random();
 			return rand.NextComment();
-		}
-
-		public static string FirstFewLines(this string s, int count)
-		{
-			string[] lines = s.Split('\n');
-			List<string> res = new List<string>();
-
-			for (int i = 0; i < lines.Length && i < count; i++)
-			{
-				res.Add(lines[i]);
-			}
-
-			return string.Join("\n", res);
 		}
 
 		public static string NextComment(this Random rand)
@@ -139,6 +129,31 @@ namespace MissionControl
 			{
 				return WITTY_COMMENT_UNAVAILABLE;
 			}
+		}
+
+		public static string FirstFewLines(this string s, int count)
+		{
+			string[] lines = s.Split('\n');
+			List<string> res = new List<string>();
+
+			for (int i = 0; i < lines.Length && i < count; i++)
+			{
+				res.Add(lines[i]);
+			}
+
+			return string.Join("\n", res);
+		}
+
+		public static string ToReadableDictString<TKey, TValue>(this Dictionary<TKey, TValue> dict)
+		{
+			string res = "";
+
+			foreach (KeyValuePair<TKey, TValue> kvp in dict)
+			{
+				res += $"{kvp.Key}: {kvp.Value}\n";
+			}
+
+			return res;
 		}
 	}
 }

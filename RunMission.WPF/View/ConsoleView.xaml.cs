@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using RunMission.WPF.ViewModel;
 
 using UltimateUtil;
+using UltimateUtil.Logging;
 using UltimateUtil.UserInteraction;
 
 namespace RunMission.WPF.View
@@ -65,7 +66,15 @@ namespace RunMission.WPF.View
 				OutputBox.Document.Blocks.Add(p);
 			}
 
-			Run r = new Run(line) { Foreground = color.ToBrush() };
+			Run last = p.Inlines.LastOrDefault() as Run;
+			if (last != null && last.Text.Trim().EndsWith(">") && color != LogLevel.Interface.GetLevelColor())
+			{
+				p.Inlines.Remove(last);
+				//p = new Paragraph { Margin = new Thickness(0) };
+				//OutputBox.Document.Blocks.Add(p);
+			}
+
+			Run r = new Run(line.Replace("\t", "    ")) { Foreground = color.ToBrush() };
 			p.Inlines.Add(r);
 
 			p = new Paragraph { Margin = new Thickness(0) };
@@ -107,7 +116,7 @@ namespace RunMission.WPF.View
 		{
 			while (true)
 			{
-				string input = VersatileIO.GetString("mission> ");
+				string input = VersatileIO.GetString(MissionConsoleHandler.PROMPT_STRING);
 				if (input != null)
 				{
 					if (input.EqualsIgnoreCase("exit"))
@@ -117,7 +126,6 @@ namespace RunMission.WPF.View
 
 					// Do stuff with command
 					Commands.RunCommand(input);
-					VersatileIO.WriteLine();
 				}
 
 				if (Worker.CancellationPending)
@@ -140,7 +148,7 @@ namespace RunMission.WPF.View
 
 		private void RunBtn_OnClick(object sender, RoutedEventArgs e)
 		{
-			MissionConsoleHandler.CurrentInput = InputBox.Text;
+			Handler.CurrentInput = InputBox.Text;
 
 			InputBox.Text = "";
 			RunBtn.IsEnabled = false;

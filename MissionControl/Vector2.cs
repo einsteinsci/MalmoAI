@@ -82,6 +82,11 @@ namespace MissionControl
 			return $"({X}, {Y})";
 		}
 
+		public string ToString(string format)
+		{
+			return "(" + X.ToString(format) + ", " + Y.ToString(format) + ")";
+		}
+
 		public double Distance(Vector2 other)
 		{
 			double dx = X - other.X;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -50,13 +51,18 @@ namespace RunMission.WPF.View
 
 			Window.Dispatcher.Invoke(() => {
 				WPFUtil.BringExternalWindowToFront("Minecraft 1.8");
+				Thread.Sleep(200);
 				WPFUtil.BringExternalWindowToFront(Window.Title);
+
+				Window.Console.InputBox.Focus();
 			});
 		}
 
 		public void StopRunner()
 		{
 			Runner.Cancel();
+
+			Window.Dispatcher.Invoke(() => Window.Console.InputBox.Focus());
 		}
 
 		private void Worker_OnDoWork(object sender, DoWorkEventArgs e)
